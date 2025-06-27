@@ -1,0 +1,18 @@
+name: Lovanish
+main: com.github.thecaptainfluffy.mc.paper.plugin.lovanish.Lovanish
+version: 1.2
+description: Custom vanish command that broadcasts logout message. OP will see players with a (V) infront to mark that player is vanished
+depend: [Essentials]
+commands:
+  lovanish:
+    description: Vanishes and sends logout message.
+    usage: /<command>
+  lovanish-add-op:
+    description: Add OP to blacklist so they can't see the people that lovanish
+    usage: /<command>
+  lovanish-remove-op:
+    description: Remove OP to blacklist so they can't se the people that lovanish
+    usage: /<command>
+  lovanish-op-blacklist:
+    description: List OPs that exist on the blacklist
+    usage: /<command>
