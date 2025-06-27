@@ -2,7 +2,7 @@
 
 ## Read code of conduct first
 
-[CODE_OF_CONDUCT](https://github.com/thecaptainfluffy/lovanish/CODE_OF_CONDUCT.md)
+[CODE_OF_CONDUCT](https://github.com/thecaptainfluffy/lovanish/blob/main/CODE_OF_CONDUCT.md)
 
 ## How to Contribute
 

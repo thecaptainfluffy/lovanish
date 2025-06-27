@@ -21,4 +21,4 @@ This is beneficial for streamers that does not want to show people this effect.
 
 ## License
 
-[LICENSE](https://github.com/thecaptainfluffy/lovanish/LICENSE)
+[LICENSE](https://github.com/thecaptainfluffy/lovanish/blob/main/LICENSE)
