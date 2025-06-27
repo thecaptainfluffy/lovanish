@@ -1,0 +1,49 @@
+name: Build and Sign Plugin
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven
+
+    - name: Decode and write keystore
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > mykeystore.jks
+
+    - name: Build with Maven and sign JAR
+      run: |
+        mvn clean verify \
+          -Dgpg.skip=true \
+          -DskipTests=true \
+          -Djarsigner.storepass=${{ secrets.KEYSTORE_PASSWORD }} \
+          -Djarsigner.keypass=${{ secrets.KEY_PASSWORD }} \
+          -Djarsigner.alias=${{ secrets.KEY_ALIAS }} \
+          -Djarsigner.keystore=mykeystore.jks \
+          org.apache.maven.plugins:maven-jarsigner-plugin:sign
+
+    - name: Upload Signed JAR
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-plugin
+        path: target/*.jar
+

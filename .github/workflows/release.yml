@@ -1,0 +1,41 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Decode and write keystore
+      run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > lovanish.keystore
+
+    - name: Build and Sign Plugin
+      run: mvn clean verify -Djarsigner.keystore=lovanish.keystore -Djarsigner.storepass="${{ secrets.KEYSTORE_PASSWORD }}" -Djarsigner.keypass="${{ secrets.KEY_PASSWORD }}" -Djarsigner.alias="${{ secrets.KEY_ALIAS }}" org.apache.maven.plugins:maven-jarsigner-plugin:sign
+          
+    - name: Get version from tag
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: "Release ${{ steps.get_version.outputs.version }}"
+        tag_name: ${{ steps.get_version.outputs.version }}
+        files: target/*.jar
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
