@@ -1,6 +1,6 @@
 name: Lovanish
 main: com.github.thecaptainfluffy.mc.paper.plugin.lovanish.Lovanish
-version: "1.2"
+version: "${project.version}"
 api-version: "1.19"
 description: Custom vanish command that broadcasts logout messages. OPs see (V) prefixes.
 softdepend: [Essentials]  # Better than `depend` to avoid NPE if Essentials is missing
