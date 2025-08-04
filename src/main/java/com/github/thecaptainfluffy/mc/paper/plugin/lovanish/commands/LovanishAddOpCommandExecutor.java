@@ -4,6 +4,8 @@ import com.github.thecaptainfluffy.mc.paper.plugin.lovanish.Lovanish;
 import com.google.gson.*;
 import net.ess3.api.IEssentials;
 import net.ess3.api.IUser;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -29,9 +31,12 @@ public class LovanishAddOpCommandExecutor implements TabExecutor {
    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
       if (sender instanceof Player) {
          Player player = (Player)sender;
-         IUser user = ess.getUser(player);
+         if (args.length == 0) {
+            player.sendMessage(ChatColor.RED + "Usage: /lovanish-add-blacklist <player>");
+            return true;
+         }
 
-         if (player.isOp()) {
+         if (player.hasPermission("lovanish.addblacklist")) {
             List<String> opsBlackList = new ArrayList<>(plugin.getLovanishResource(Lovanish.OPS_BLACKLIST)
                 .getAsJsonArray().asList().stream()
                 .map(JsonElement::getAsString)
@@ -39,12 +44,16 @@ public class LovanishAddOpCommandExecutor implements TabExecutor {
 
             for (String nickname: args) {
                IUser addUser = ess.getUser(nickname);
-               if (addUser != null && !opsBlackList.contains(nickname) && addUser.getBase().isOp()) {
-                  opsBlackList.add(nickname);
-                  player.sendMessage(player.getName() + " have added " + nickname + " to the blacklist of lovanish");
-               } else {
-                  player.sendMessage(nickname + " doesn't exist");
+               if (addUser == null) {
+                  player.sendMessage(ChatColor.RED + nickname + " does not exist.");
+                  continue;
                }
+               if (opsBlackList.contains(nickname)) {
+                  player.sendMessage(ChatColor.YELLOW + nickname + " is already on the blacklist.");
+                  continue;
+               }
+               opsBlackList.add(nickname);
+               player.sendMessage(ChatColor.GREEN + player.getName() + " added " + nickname + " to the Lovanish blacklist");
             }
             plugin.saveTempLovanishResource(Lovanish.OPS_BLACKLIST, JsonParser.parseString(opsBlackList.toString()).getAsJsonArray());
             return true;
@@ -60,12 +69,11 @@ public class LovanishAddOpCommandExecutor implements TabExecutor {
          Player player = (Player) sender;
 
          // Check player permissions or any other condition for tab-completion
-         if (player.isOp()) {
-            // Return a list of tab-completion suggestions based on args or any other criteria
-            List<String> suggestions = new ArrayList<>();
-            suggestions.add("lovanish-add-op");
-            // Add more suggestions based on your needs
-
+         if (player.hasPermission("lovanish.addblacklist")) {
+            List<String> suggestions = Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> p.hasPermission("lovanish.use"))  // only OPs
+                    .map(Player::getName)
+                    .collect(Collectors.toList());
             return suggestions;
          }
       }

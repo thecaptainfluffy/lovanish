@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import net.ess3.api.IEssentials;
 import net.ess3.api.IUser;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -30,22 +32,30 @@ public class LovanishRemoveOpCommandExecutor implements TabExecutor {
    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
       if (sender instanceof Player) {
          Player player = (Player)sender;
-         IUser user = ess.getUser(player);
 
-         if (player.isOp()) {
+         if (args.length == 0) {
+            player.sendMessage(ChatColor.RED + "Usage: /lovanish-remove-blacklist <player>");
+            return true;
+         }
+
+         if (player.hasPermission("lovanish.removeblacklist")) {
             List<String> opsBlackList = new ArrayList<>(plugin.getLovanishResource(Lovanish.OPS_BLACKLIST)
                 .getAsJsonArray().asList().stream()
                 .map(JsonElement::getAsString)
                 .collect(Collectors.toList()));
 
             for (String nickname: args) {
-               IUser addUser = ess.getUser(nickname);
-               if (addUser != null && opsBlackList.contains(nickname) && addUser.getBase().isOp()) {
-                  opsBlackList.remove(nickname);
-                  player.sendMessage(player.getName() + " have removed " + nickname + " from the blacklist of lovanish");
-               } else {
-                  player.sendMessage(nickname + " doesn't exist");
+               IUser removeUser = ess.getUser(nickname);
+               if (removeUser == null) {
+                  player.sendMessage(ChatColor.RED + nickname + " does not exist.");
+                  continue;
                }
+               if (!opsBlackList.contains(nickname)) {
+                  player.sendMessage(ChatColor.YELLOW + nickname + " is already on the blacklist.");
+                  continue;
+               }
+               opsBlackList.remove(nickname);
+               player.sendMessage(ChatColor.GREEN + player.getName() + " removed " + nickname + " from the Lovanish blacklist");
             }
             plugin.saveTempLovanishResource(Lovanish.OPS_BLACKLIST, JsonParser.parseString(opsBlackList.toString()).getAsJsonArray());
             return true;
@@ -61,12 +71,11 @@ public class LovanishRemoveOpCommandExecutor implements TabExecutor {
          Player player = (Player) sender;
 
          // Check player permissions or any other condition for tab-completion
-         if (player.isOp()) {
-            // Return a list of tab-completion suggestions based on args or any other criteria
-            List<String> suggestions = new ArrayList<>();
-            suggestions.add("lovanish-remove-op");
-            // Add more suggestions based on your needs
-
+         if (player.hasPermission("lovanish.removeblacklist")) {
+            List<String> suggestions = new ArrayList<>(plugin.getLovanishResource(Lovanish.OPS_BLACKLIST)
+                    .getAsJsonArray().asList().stream()
+                    .map(JsonElement::getAsString)
+                    .collect(Collectors.toList()));
             return suggestions;
          }
       }

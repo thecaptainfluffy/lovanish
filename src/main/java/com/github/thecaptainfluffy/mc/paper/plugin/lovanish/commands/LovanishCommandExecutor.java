@@ -13,7 +13,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +36,7 @@ public class LovanishCommandExecutor implements TabExecutor {
          Player player = (Player)sender;
          IUser user = ess.getUser(player);
 
-         if (player.isOp()) {
+         if (player.hasPermission("lovanish.use")) {
             // Store the before state
             boolean preVanishState = user.isVanished();
 
@@ -76,22 +75,6 @@ public class LovanishCommandExecutor implements TabExecutor {
 
    @Override
    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-      if (sender instanceof Player) {
-         // Only provide tab-completion if the sender is a player
-         Player player = (Player) sender;
-
-         // Check player permissions or any other condition for tab-completion
-         if (player.isOp()) {
-            // Return a list of tab-completion suggestions based on args or any other criteria
-            List<String> suggestions = new ArrayList<>();
-            suggestions.add("lovanish");
-            // Add more suggestions based on your needs
-
-            return suggestions;
-         }
-      }
-
-      // Return an empty list to disable tab-completion for non-OP players or non-players
       return new ArrayList<>();
    }
 }

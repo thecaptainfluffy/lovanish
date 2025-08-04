@@ -21,7 +21,6 @@ import java.util.Map;
 public class Lovanish extends JavaPlugin implements Listener {
 
    public static final String OPS_BLACKLIST = "ops-blacklist.json";
-
    private File pluginFolder;
 
    private Map<String, JsonElement> fileAndResource;
@@ -47,9 +46,9 @@ public class Lovanish extends JavaPlugin implements Listener {
 
 	  // Register command and listener
 	  getCommand("lovanish").setExecutor(new LovanishCommandExecutor(this, ess));
-	  getCommand("lovanish-add-op").setExecutor(new LovanishAddOpCommandExecutor(this, ess));
-	  getCommand("lovanish-remove-op").setExecutor(new LovanishRemoveOpCommandExecutor(this, ess));
-	  getCommand("lovanish-op-blacklist").setExecutor(new LovanishOpBlacklistCommandExecutor(this, ess));
+	  getCommand("lovanish-add-blacklist").setExecutor(new LovanishAddOpCommandExecutor(this, ess));
+	  getCommand("lovanish-remove-blacklist").setExecutor(new LovanishRemoveOpCommandExecutor(this, ess));
+	  getCommand("lovanish-blacklist").setExecutor(new LovanishOpBlacklistCommandExecutor(this, ess));
 	  getServer().getPluginManager().registerEvents(this, this);
 	  getServer().getPluginManager().registerEvents(new LovanishListener(this, ess), this);
    }

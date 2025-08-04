@@ -1,18 +1,50 @@
 name: Lovanish
 main: com.github.thecaptainfluffy.mc.paper.plugin.lovanish.Lovanish
-version: 1.2
-description: Custom vanish command that broadcasts logout message. OP will see players with a (V) infront to mark that player is vanished
-depend: [Essentials]
+version: "${project.version}"
+api-version: "1.19"
+description: Custom vanish command that broadcasts logout messages. OPs see (V) prefixes.
+softdepend: [Essentials]  # Better than `depend` to avoid NPE if Essentials is missing
+
 commands:
   lovanish:
-    description: Vanishes and sends logout message.
+    description: Toggle vanish (broadcast fake logout)
     usage: /<command>
-  lovanish-add-op:
-    description: Add OP to blacklist so they can't see the people that lovanish
+    permission: lovanish.use
+    permission-message: "&cYou cannot vanish!"
+  lovanish-add-blacklist:
+    description: Add player to Lovanish visibility blacklist
+    usage: /<command> <player>
+    permission: lovanish.addblacklist
+    permission-message: "&cYou cannot manage Lovanish blacklist!"
+  lovanish-remove-blacklist:
+    description: Remove player from Lovanish visibility blacklist
+    usage: /<command> <player>
+    permission: lovanish.removeblacklist
+    permission-message: "&cYou cannot manage Lovanish blacklist!"
+  lovanish-blacklist:
+    description: See current Lovanish visibility blacklist
     usage: /<command>
-  lovanish-remove-op:
-    description: Remove OP to blacklist so they can't se the people that lovanish
-    usage: /<command>
-  lovanish-op-blacklist:
-    description: List OPs that exist on the blacklist
-    usage: /<command>
+    permission: lovanish.blacklist
+    permission-message: "&cYou cannot view Lovanish blacklist!"
+
+permissions:
+  lovanish.*:
+    description: Grants access to all Lovanish commands
+    default: op
+    children:
+      lovanish.use: true
+      lovanish.addblacklist: true
+      lovanish.removeblacklist: true
+      lovanish.blacklist: true
+  lovanish.use:
+    description: Allows self‑vanish and fake logout
+    default: op
+  lovanish.addblacklist:
+    description: Manage which ops are invisible to vanished players
+    default: op
+  lovanish.removeblacklist:
+    description: Remove ops from visibility blacklist
+    default: op
+  lovanish.blacklist:
+    description: View current ops visibility blacklist
+    default: op
