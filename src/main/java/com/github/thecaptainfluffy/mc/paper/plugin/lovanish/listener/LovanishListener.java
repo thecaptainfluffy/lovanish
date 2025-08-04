@@ -37,23 +37,23 @@ public class LovanishListener implements Listener {
 		  .collect(Collectors.toList()));
 	  Player jPlayer = event.getPlayer();
 	  IUser jUser = ess.getUser(jPlayer);
-	  if (jPlayer.isOp() && jUser.isVanished()) {
+	  if (jPlayer.hasPermission("lovanish.use") && jUser.isVanished()) {
 		 event.joinMessage(null);
 		 for (IUser user : ess.getOnlineUsers()) {
-			if (!user.getBase().isOp() || opsBlackList.contains(user.getName())) {
+			if (!user.getBase().hasPermission("lovanish.use") || opsBlackList.contains(user.getName())) {
 			   user.getBase().hidePlayer(plugin, jPlayer);
 			}
 		 }
 	  }
-	  if (jPlayer.isOp() && opsBlackList.contains(jPlayer.getName())) {
+	  if (jPlayer.hasPermission("lovanish.use") && opsBlackList.contains(jPlayer.getName())) {
 		 for(IUser user : ess.getOnlineUsers()) {
-			if (user.getBase().isOp() && user.isVanished()) {
+			if (user.getBase().hasPermission("lovanish.use") && user.isVanished()) {
 			   jPlayer.hidePlayer(plugin, user.getBase());
 			}
 		 }
-	  } else if (!jPlayer.isOp()) {
+	  } else if (!jPlayer.hasPermission("lovanish.use")) {
 		 for(IUser user : ess.getOnlineUsers()) {
-			if (user.getBase().isOp() && user.isVanished()) {
+			if (user.getBase().hasPermission("lovanish.use") && user.isVanished()) {
 			   jPlayer.hidePlayer(plugin, user.getBase());
 			}
 		 }
