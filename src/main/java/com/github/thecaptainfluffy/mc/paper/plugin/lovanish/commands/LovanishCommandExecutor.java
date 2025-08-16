@@ -38,34 +38,31 @@ public class LovanishCommandExecutor implements TabExecutor {
 
          if (player.hasPermission("lovanish.use")) {
             // Store the before state
-            boolean preVanishState = user.isVanished();
+            boolean isVanished = user.isVanished();
 
-            // Mimic the behavior of /vanish from EssentialsX
-            user.setVanished(!user.isVanished());
+            // Fetch the ops blacklist
+            List<String> opsBlackList = plugin.getLovanishResource(Lovanish.OPS_BLACKLIST)
+                .getAsJsonArray().asList().stream()
+                .map(JsonElement::getAsString)
+                .collect(Collectors.toList());
 
-            // Broadcast message
-            if (preVanishState != user.isVanished()) {
-               // Fetch the ops blacklist
-               List<String> opsBlackList = plugin.getLovanishResource(Lovanish.OPS_BLACKLIST)
-                   .getAsJsonArray().asList().stream()
-                   .map(JsonElement::getAsString)
-                   .collect(Collectors.toList());
-
-               // Handle what should happen when user change vanish state
-               if (user.isVanished()) {
-                  player.playerListName(Component.text("(V) " + player.getName(), Style.style(TextColor.color(216,191,216))));
-                  for (String blockOp : opsBlackList) {
-                     ess.getUser(blockOp).getBase().hidePlayer(plugin, player);
-                  }
-                  Bukkit.getServer().broadcast(Component.text(player.getName() + " left the game", Style.style(TextColor.color(255, 255, 102))));
-               } else {
-                  player.playerListName(Component.text(player.getName()));
-                  for (String blockOp : opsBlackList) {
-                     ess.getUser(blockOp).getBase().showPlayer(plugin, player);
-                  }
-                  player.removeMetadata("vanishedAchievementDisabled", plugin);
-                  Bukkit.getServer().broadcast(Component.text(player.getName() + " joined the game", Style.style(TextColor.color(255, 255, 102))));
+            // Handle what should happen when user change vanish state
+            if (isVanished) {
+               player.playerListName(Component.text(player.getName()));
+               user.setVanished(false);
+               for (String blockOp : opsBlackList) {
+                  ess.getUser(blockOp).getBase().showPlayer(plugin, player);
                }
+               player.removeMetadata("vanishedAchievementDisabled", plugin);
+               Bukkit.getServer().broadcast(Component.text(player.getName() + " joined the game", Style.style(TextColor.color(255, 255, 102))));
+            } else {
+               player.playerListName(Component.text("(V) " + player.getName(), Style.style(TextColor.color(216,191,216))));
+               user.setVanished(true);
+               for (String blockOp : opsBlackList) {
+                  ess.getUser(blockOp).getBase().hidePlayer(plugin, player);
+               }
+               Bukkit.getServer().broadcast(Component.text(player.getName() + " left the game", Style.style(TextColor.color(255, 255, 102))));
+
             }
             return true;
          }

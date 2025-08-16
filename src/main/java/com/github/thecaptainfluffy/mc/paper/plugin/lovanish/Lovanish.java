@@ -129,10 +129,8 @@ public class Lovanish extends JavaPlugin implements Listener {
 
    public void saveLovanishResources() {
 	  for(Map.Entry<String, JsonElement> entry : fileAndResource.entrySet()) {
-		 getLogger().info("Update file " + entry.getKey());
 		 if (entry.getValue() instanceof JsonArray) {
 			saveLovanishResource(entry.getKey(), entry.getValue().getAsJsonArray().toString());
-			getLogger().info(entry.getValue().getAsJsonArray().toString());
 		 } else {
 			saveLovanishResource(entry.getKey(), entry.getValue().toString());
 			getLogger().info(entry.getValue().toString());
@@ -146,7 +144,6 @@ public class Lovanish extends JavaPlugin implements Listener {
 		 FileWriter write = new FileWriter(file);
 		 write.write(content);
 		 write.close();
-		 getLogger().info("Create the file " + fileName + " in Lovanish plugin folder");
 	  } catch (IOException e) {
 		 getLogger().severe(e.getMessage());
 	  }
